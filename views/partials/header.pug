@@ -1,4 +1,4 @@
-nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
+nav.navbar.navbar-expand-lg.navbar-light
   .container
     a.navbar-brand(href='/')
       //- img.d-inline-block.align-text-top(src='/bootstrap-logo.svg' alt='' width='30' height='24')
@@ -9,6 +9,8 @@ nav.navbar.navbar-expand-lg.navbar-dark.bg-dark
       ul.navbar-nav.me-auto.mb-2.mb-lg-0
         li.nav-item
           a.nav-link(class=(title === 'Home') ? 'active' : '', href='/') Dashboard
+        li.nav-item
+          a.nav-link(class=(title === 'Polls') ? 'active' : '', href='/polls') Polls
         li.nav-item
           a.nav-link(class=(title === 'Contact') ? 'active' : '', href='/contact') Contact
 

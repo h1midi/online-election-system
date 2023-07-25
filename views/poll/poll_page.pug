@@ -1,0 +1,115 @@
+extends ../layout
+
+//- desplay the poll question and all the details
+block content
+  head
+  title Poll Details
+  style.
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+    }
+    h1 {
+    text-align: center;
+    margin-top: 30px;
+    }
+    .poll-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .poll-question {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    }
+    .poll-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    }
+    .poll-option input[type="radio"] {
+    margin-right: 10px;
+    }
+    .poll-option label {
+    font-size: 16px;
+    }
+    .poll-submit {
+    display: block;
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    }
+    .poll-submit:hover {
+    background-color: #0056b3;
+    }
+    .poll-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .poll-votes {
+      margin-right: 10px;
+    }
+
+    .progress-bar {
+      width: 150px;
+      height: 18px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #007bff;
+      border-radius: 5px;
+      color: #000000;
+      text-align: center;
+      line-height: 18px;
+      font-size: 12px;
+      transition: width 0.3s ease;
+    }
+
+  .poll-container
+    p.poll-question= poll.question
+    if poll.options.length < 1
+      h3 No options for this poll yet
+    else
+      ul
+        each op in poll.options.sort((a, b) => b.votes - a.votes)
+          - const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0)
+          - const percentage = totalVotes > 0 ? (op.votes / totalVotes) * 100 : 0
+          .poll-option
+            if String(poll.createdBy._id) != String(user._id)
+              input(type='radio', name='poll-option', value=op.optionText)
+            label(for=op.optionText)=  op.optionText
+            //- Todo: add the normal user that already voted to the condition
+            if String(poll.createdBy._id) == String(user._id) || poll.votedBy.includes(String(user._id)) || !poll.active
+              span.poll-votes #{op.votes} votes
+              .progress-bar
+                .progress-bar-fill(style=`width: ${percentage}%`)= percentage.toFixed(1) + '%'
+
+    br
+    if user
+      if String(poll.createdBy._id) == String(user._id)
+        .div.gap-2.d-grid.d-md-flex
+          if poll.active
+            a.btn.btn-dark(href='/poll/id/' + poll._id + '/close') Close
+          else
+            a.btn.btn-dark.disabled(href='/poll/id/' + poll._id + '/close') Closed
+          form(action='/poll/id/' + poll._id + '/delete', method='POST')
+            input(type='hidden', name='_csrf', value=_csrf)
+            input.btn.btn-danger(type='submit', value='Delete')
+      else
+        a.btn.btn-primary(href='/poll/id/' + poll._id + '/vote') Vote

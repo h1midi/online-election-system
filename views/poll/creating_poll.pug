@@ -1,0 +1,23 @@
+extends ../layout
+
+block content
+  //- create a form for adding a new poll
+  form(method='POST' action='/poll/new')
+    input(type='hidden', name='_csrf', value=_csrf)
+    .form-group(style='margin: 16px;')
+      label(for='question', style='margin: 10px; font-weight: bold; font-size: 24px; ') Question
+      input#question.form-control(type='text' name='question' placeholder='Enter question')
+    .form-group(style='margin: 4px;')
+      label(for='option1', style='margin: 4px;') Option 1
+      input.form-control(type='text' id='option1' name="options" placeholder='Enter option 1')
+    .form-group(style='margin: 4px;')
+      label(for='option2', style='margin: 4px;') Option 2
+      input.form-control(type='text' id='option2' name="options" placeholder='Enter option 2')
+    .form-group(style='margin: 4px;')
+      label(for='option3', style='margin: 4px;') Option 3
+      input.form-control(type='text' id='option3' name="options" placeholder='Enter option 3')
+    .form-group(style='margin: 4px;')
+      label(for='option4', style='margin: 4px;') Option 4
+      input.form-control(type='text' id='option4' name="options" placeholder='Enter option 4')
+    br
+    button.btn.btn-primary(type='submit') Create Poll

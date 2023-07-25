@@ -73,7 +73,7 @@ exports.postContact = async (req, res) => {
     const mailOptions = {
       to: process.env.SITE_CONTACT_EMAIL,
       from: `${fromName} <${fromEmail}>`,
-      subject: 'Contact Form | Bug Tracker',
+      subject: 'Contact Form | Online Election',
       text: req.body.message
     };
 

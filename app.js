@@ -28,6 +28,8 @@ dotenv.config({ path: '.env' });
 const userController = require('./controllers/user');
 const contactController = require('./controllers/contact');
 const homeController = require('./controllers/home');
+const pollController = require('./controllers/poll');
+const voteController = require('./controllers/vote');
 
 /**
  * API keys and Passport configuration.
@@ -132,11 +134,25 @@ app.get('/account', passportConfig.isAuthenticated, userController.getAccount);
 app.post('/account/profile', passportConfig.isAuthenticated, userController.postUpdateProfile);
 app.post('/account/password', passportConfig.isAuthenticated, userController.postUpdatePassword);
 app.post('/account/delete', passportConfig.isAuthenticated, userController.postDeleteAccount);
+/**
+ * poll routes.
+ */
+app.get('/polls', passportConfig.isAuthenticated, pollController.getAllPolls);
+app.get('/poll/id/:id', passportConfig.isAuthenticated, pollController.getPollById);
+app.post('/poll/id/:id/delete', passportConfig.isAuthenticated, pollController.deletePoll);
+app.get('/poll/id/:id/close', passportConfig.isAuthenticated, pollController.closePoll);
+app.get('/poll/new', passportConfig.isAuthenticated, pollController.getCreatePoll);
+app.post('/poll/new', passportConfig.isAuthenticated, pollController.postCreatePoll);
+/**
+ * vet routes.
+ */
+app.get('/poll/id/:id/vote', passportConfig.isAuthenticated, voteController.getCastVote);
+app.post('/poll/id/:id/vote', passportConfig.isAuthenticated, voteController.postCastVote);
 
 /**
  * Error Handler.
  */
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'development' || true) {
   // only use in development
   app.use(errorHandler());
 } else {
