@@ -1,4 +1,4 @@
-nav.navbar.navbar-expand-lg.navbar-light
+nav.navbar.navbar-expand-lg.navbar-light(style=('background-color: #4A55A2;'))
   .container
     a.navbar-brand(href='/')
       //- img.d-inline-block.align-text-top(src='/bootstrap-logo.svg' alt='' width='30' height='24')
@@ -16,10 +16,10 @@ nav.navbar.navbar-expand-lg.navbar-light
 
       form.d-flex
         if !user
-          a.btn.btn-outline-light.me-2(href='/login') Login
-          a.btn.btn-outline-primary(href='/signup') Create Account
+          a.btn.btn-light.me-2(href='/login') Login
+          a.btn.btn-primary(href='/signup') Create Account
         else
-          a.btn.btn-outline-primary.me-2(href='/account') My Account
-          a.btn.btn-outline-danger(href='/logout') Sign out
+          a.btn.btn-sm.btn-primary.me-2(href='/account') My Account
+          a.btn.btn-sm.btn-danger(href='/logout') Sign out
 
 

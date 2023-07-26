@@ -4,11 +4,6 @@ block content
   head
   title Polls List
   style.
-    body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    }
     h1 {
     text-align: center;
     margin-top: 30px;
@@ -18,17 +13,18 @@ block content
     margin: 0 auto;
     padding: 20px;
     margin-bottom: 30px;
-    background-color: #ffffff;
+    //- background-color: #22A699;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .poll-item {
-    border: 1px solid #cccccc;
+    border: 3px solid #4A55A2;
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 10px;
+    background-color: #A0BFE0;
     }
     .poll-item:hover {
-    border-color: #007bff;
+    border: 5px solid #4A55A2;
     }
     .poll-question {
     font-size: 18px;
@@ -40,25 +36,26 @@ block content
     }
     .poll-created-by {
     font-size: 14px;
-    color: #666666;
+    color: #4A55A2;
     }
-  .row
-    .col
-      h1= title
-    .col
-      h1
-        a.btn.btn-outline-primary(href='/poll/new')
-          | Create Poll
   .polls-container
+    .row
+      .col
+        h1= title
+      .col
+        h1
+          a.btn.btn-outline-primary(href='/poll/new')
+            | Create Poll
     each poll in polls.sort(poll => poll.active ? -1 : 1)
       .poll-item
         p.poll-question= poll.question
         p.poll-options Options: <b>#{poll.options.map((option) => option.optionText).join(', ')}</b>
-        p.poll-created-by Created by: #{poll.createdBy.profile.name}
-        .row
-          .col-2
-            p.poll-created-by Total Votes: #{poll.options.reduce((sum, option) => sum + option.votes, 0)}
-          .col
-            p.poll-created-by Status: #{poll.active ? 'Active' : 'Closed'}
-        a.btn.btn-primary(href='/poll/id/' + poll._id) View Poll
+        p.poll-created-by Created by: 
+          b #{poll.createdBy.profile.name}
+        .div.gap-4.d-grid.d-md-flex
+          p.poll-option Total Votes: 
+            b #{poll.options.reduce((sum, option) => sum + option.votes, 0)}
+          p.poll-option Status: 
+            b #{poll.active ? 'Active' : 'Closed'}
+        a.btn.btn-outline-primary(href='/poll/id/' + poll._id) View Poll
 

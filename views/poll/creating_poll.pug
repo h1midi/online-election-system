@@ -2,7 +2,7 @@ extends ../layout
 
 block content
   //- create a form for adding a new poll
-  form(method='POST' action='/poll/new')
+  form(method='POST' action='/poll/new' style='width: 556px;align-items: center; margin: 0 auto;')
     input(type='hidden', name='_csrf', value=_csrf)
     .form-group(style='margin: 16px;')
       label(for='question', style='margin: 10px; font-weight: bold; font-size: 24px; ') Question
