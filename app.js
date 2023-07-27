@@ -107,7 +107,7 @@ app.use('/webfonts', express.static(path.join(__dirname, 'node_modules/@fortawes
 /**
  * Home routes.
  */
-app.get('/', homeController.index);
+app.get('/', passportConfig.isAuthenticated, pollController.allPolls, homeController.index);
 /**
  * Auth routes.
  */
@@ -137,17 +137,17 @@ app.post('/account/delete', passportConfig.isAuthenticated, userController.postD
 /**
  * poll routes.
  */
-app.get('/polls', passportConfig.isAuthenticated, pollController.getAllPolls);
-app.get('/poll/id/:id', passportConfig.isAuthenticated, pollController.getPollById);
-app.post('/poll/id/:id/delete', passportConfig.isAuthenticated, pollController.deletePoll);
+app.get('/polls', passportConfig.isAuthenticated, pollController.allPolls, pollController.getAllPolls);
+app.get('/poll/id/:id', passportConfig.isAuthenticated, pollController.getPollById, voteController.getPollVotes);
+app.get('/poll/id/:id/delete', passportConfig.isAuthenticated, voteController.deleteVote, pollController.deletePoll);
 app.get('/poll/id/:id/close', passportConfig.isAuthenticated, pollController.closePoll);
 app.get('/poll/new', passportConfig.isAuthenticated, pollController.getCreatePoll);
 app.post('/poll/new', passportConfig.isAuthenticated, pollController.postCreatePoll);
 /**
- * vet routes.
+ * vote routes.
  */
-app.get('/poll/id/:id/vote', passportConfig.isAuthenticated, voteController.getCastVote);
 app.post('/poll/id/:id/vote', passportConfig.isAuthenticated, voteController.postCastVote);
+app.get('/activity', passportConfig.isAuthenticated, userController.getActivity);
 
 /**
  * Error Handler.

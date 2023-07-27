@@ -1,9 +1,6 @@
 extends ../layout
 
-//- desplay the poll question and all the details
 block content
-  head
-  title Poll Details
   style.
     h1 {
     text-align: center;
@@ -78,34 +75,81 @@ block content
     }
 
   .poll-container
-    p.poll-question= poll.question
-    if poll.options.length < 1
-      h3 No options for this poll yet
-    else
-      ul
-        each op in poll.options.sort((a, b) => b.votes - a.votes)
-          - const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0)
-          - const percentage = totalVotes > 0 ? (op.votes / totalVotes) * 100 : 0
-          .poll-option
-            if String(poll.createdBy._id) != String(user._id)
-              input(type='radio', name='poll-option', value=op.optionText)
-            label(for=op.optionText)=  op.optionText
-            //- Todo: add the normal user that already voted to the condition
-            if String(poll.createdBy._id) == String(user._id) || poll.votedBy.includes(String(user._id)) || !poll.active
-              span.poll-votes #{op.votes} votes
-              .progress-bar
-                .progress-bar-fill(style=`width: ${percentage}%`)= percentage.toFixed(1) + '%'
-
-    br
-    if user
-      if String(poll.createdBy._id) == String(user._id)
-        .div.gap-2.d-grid.d-md-flex
-          if poll.active
-            a.btn.btn-dark(href='/poll/id/' + poll._id + '/close') Close
-          else
-            a.btn.btn-dark.disabled(href='/poll/id/' + poll._id + '/close') Closed
-          form(action='/poll/id/' + poll._id + '/delete', method='POST')
-            input(type='hidden', name='_csrf', value=_csrf)
-            input.btn.btn-danger(type='submit', value='Delete')
+    form(action='/poll/id/' + poll._id + '/vote', method='POST')
+      p.poll-question= poll.question
+      if poll.options.length < 1
+        h3 No options for this poll yet
       else
-        a.btn.btn-primary(href='/poll/id/' + poll._id + '/vote') Vote
+        ul
+          each op in hasVoted ? poll.options.sort((a, b) => b.votes - a.votes) : poll.options
+            - const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0)
+            - const percentage = totalVotes > 0 ? (op.votes / totalVotes) * 100 : 0
+            .poll-option
+              if String(poll.createdBy._id) != String(user._id) && poll.active && !hasVoted
+                .div(style='display: flex; align-items: center;')
+                  if String(poll.createdBy._id) != String(user._id) && !hasVoted && poll.active
+                    input(type='radio', name='selectedOption', value=op._id, id=op._id)
+                  if hasVoted
+                    if String(op._id) == String(existingVote.selectedOption)
+                      label(for=op._id)
+                        b=  op.optionText
+                    else
+                      label(for=op._id)=  op.optionText
+                  else
+                    label(for=op._id)=  op.optionText
+                  if String(poll.createdBy._id) == String(user._id) || !poll.active || hasVoted
+                    span.poll-votes #{op.votes} votes
+                    .progress-bar
+                      .progress-bar-fill(style=`width: ${percentage}%`)= percentage.toFixed(1) + '%'
+              else
+                if String(poll.createdBy._id) != String(user._id) && !hasVoted && poll.active
+                  input(type='radio', name='selectedOption', value=op._id, id=op._id)
+                if hasVoted
+                  if String(op._id) == String(existingVote.selectedOption)
+                    label(for=op._id)
+                      b=  op.optionText
+                  else
+                    label(for=op._id)=  op.optionText
+                else
+                  label(for=op._id)=  op.optionText
+                span.poll-votes #{op.votes} votes
+                .progress-bar
+                  .progress-bar-fill(style=`width: ${percentage}%`)= percentage.toFixed(1) + '%'
+
+      br
+      if user
+        if String(poll.createdBy._id) == String(user._id)
+          .div.gap-2.d-grid.d-md-flex
+            if poll.active
+              a.btn.btn-dark(href='/poll/id/' + poll._id + '/close') Close
+            else
+              a.btn.btn-dark.disabled(href='/poll/id/' + poll._id + '/close') Closed
+            a.btn.btn-danger(href='/poll/id/' + poll._id + '/delete') Delete
+        else
+          if !hasVoted
+            if poll.active
+              input(type='hidden', name='_csrf', value=_csrf)
+              input.btn.btn-primary(type='submit', value='Vote')
+          else
+            input.btn.btn-primary.disabled(type='submit', value='Voted')
+  br
+  if String(poll.createdBy._id) == String(user._id)
+    if votes.length > 0
+      table.table.table-striped.table-hover
+        thead
+          tr
+            th Name
+            th Email
+            th Poll Question
+            th Option
+            th Voted At
+        tbody
+          each vote in votes
+            tr
+              td= vote.voter.profile.name
+              td= vote.voter.email
+              td= vote.poll.question
+              td= vote.selectedOption
+              td= vote.voted_at.toLocaleDateString(undefined, {day: 'numeric',month: 'short',year: 'numeric',})
+    else
+      h3 No votes yet

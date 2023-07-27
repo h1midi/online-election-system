@@ -6,6 +6,8 @@ const passport = require('passport');
 const validator = require('validator');
 const mailChecker = require('mailchecker');
 const User = require('../models/User');
+const Poll = require('../models/Poll');
+const Vote = require('../models/Vote');
 
 const randomBytesAsync = promisify(crypto.randomBytes);
 
@@ -501,4 +503,30 @@ exports.postForgot = (req, res, next) => {
     .then(sendForgotPasswordEmail)
     .then(() => res.redirect('/forgot'))
     .catch(next);
+};
+
+exports.getActivity = async (req, res) => {
+  try {
+    const polls = await Poll.find({ createdBy: req.user.id }).populate('createdBy');
+    const unprocessedVotes = await Vote.find({ voter: req.user.id })
+      .populate('voter')
+      .populate('poll');
+    const votes = unprocessedVotes.map((vote) => {
+      const selectedOptionText = vote.poll.options
+        .find((option) => option._id.toString() === vote.selectedOption.toString()).optionText;
+      return {
+        _id: vote._id,
+        poll: vote.poll,
+        selectedOption: selectedOptionText,
+        voted_at: vote.voted_at,
+      };
+    });
+    res.render('my_activity', {
+      votes,
+      polls,
+      title: 'My Activity'
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };

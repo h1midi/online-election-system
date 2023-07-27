@@ -1,6 +1,126 @@
 extends layout
 
 block content
+  style.
+    h1 {
+    text-align: center;
+    margin-top: 30px;
+    }
+    .polls-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .poll-item {
+    border: 3px solid #4A55A2;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #A0BFE0;
+    }
+    .poll-item:hover {
+    border: 5px solid #4A55A2;
+    }
+    .poll-question {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    }
+    .poll-options {
+    font-size: 16px;
+    }
+    .poll-created-by {
+    font-size: 14px;
+    color: #4A55A2;
+    }
+    .badge {
+    margin-left: auto;
+    height: 25px;
+    background-color: #4A55A2;
+    }
+    .poll-votes {
+      margin-right: 10px;
+    }
+
+    .progress-bar {
+      width: 150px;
+      height: 18px;
+      background-color: #f2f2f2;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #C5DFF8;
+      border-radius: 5px;
+      color: #4A55A2;
+      text-align: center;
+      line-height: 18px;
+      font-size: 12px;
+      transition: width 0.3s ease;
+    }
   h1 Intership Project
   p.lead An intership project at <b>SYNC INTERN'S</b>.
-
+  .div.d-grid.d-md-flex
+    .div(style='height: 100%; width: 50%; margin-right: 10px;')
+      h2 Open Polls
+      .polls-container
+        if polls.length > 0
+          - const sortedPolls = polls.sort((a, b) => b.options.reduce((sum, option) => sum + option.votes, 0) - a.options.reduce((sum, option) => sum + option.votes, 0))
+          - const openPolls = sortedPolls.filter((poll) => poll.active)
+          each poll in openPolls.slice(0, 5)
+            if String(poll.createdBy._id) !== String(user._id)
+              .poll-item(style= poll.active?'margin-bottom: 10px;':'background-color: #a1a2wa3;border: 3px solid #000;')
+                .div.d-grid.d-md-flex
+                  p.poll-question= poll.question
+                  if poll.hasVoted
+                    .badge You voted
+                  else
+                    .badge(style='background-color: #24af4d; ') On going
+                p.poll-options Options: <b>#{poll.options.map((option) => option.optionText).join(', ')}</b>
+                .div.gap-4.d-grid.d-md-flex
+                  p.poll-created-by Created by: 
+                    b #{poll.createdBy.profile.name}
+                  p.poll-option Total Votes: 
+                    b #{poll.options.reduce((sum, option) => sum + option.votes, 0)}
+                a.btn.btn-outline-primary(href='/poll/id/' + poll._id)= 'View Poll'
+          if openPolls.length > 5
+            br
+            a(href='/polls') View All
+        else
+          p You have not created any polls yet.
+    .div(style='height: 100%; width: 50%; margin-right: 10px;')
+      h2 Closed Polls
+      .polls-container
+        if polls.length > 0
+          - const sortedPolls = polls.sort((a, b) => b.created_at - a.created_at)
+          - const closedPolls = sortedPolls.filter((poll) => !poll.active)
+          each poll in closedPolls.slice(0, 3)
+              .poll-item(style= poll.active?'margin-bottom: 10px;':'background-color: #a1a2wa3;border: 3px solid #000;')
+                .div.d-grid.d-md-flex
+                  p.poll-question= poll.question
+                  .badge(style='background-color: #4b4c4d')= String(poll.createdBy._id) == String(user._id) ? 'Closed' : 'Ended'
+                p.poll-options Options: <b>#{poll.options.map((option) => option.optionText).join(', ')}</b>
+                .div.gap-4.d-grid.d-md-flex
+                  p.poll-created-by Created by: 
+                    b #{poll.createdBy.profile.name}
+                  p.poll-option Total Votes: 
+                    b #{poll.options.reduce((sum, option) => sum + option.votes, 0)}
+                ul
+                  each op in poll.options.sort((a, b) => b.votes - a.votes)
+                    - const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0)
+                    - const percentage = totalVotes > 0 ? (op.votes / totalVotes) * 100 : 0
+                    .poll-option
+                        .div(style='display: flex; justify-content: space-between; padding-right: 22px; padding-bottom: 6px;')
+                          label(for=op._id)=  op.optionText
+                          .progress-bar
+                            .progress-bar-fill(style=`width: ${percentage}%`)= percentage.toFixed(1) + '%'
+                a.btn.btn-outline-primary(href='/poll/id/' + poll._id)= 'View Resaults'
+          if closedPolls.length > 3
+            br
+            a(href='/polls') View All
+        else  
+          p You have not created any polls yet.

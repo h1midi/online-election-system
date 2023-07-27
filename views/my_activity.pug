@@ -1,0 +1,92 @@
+extends layout
+
+//- desplay the poll question and all the details
+block content
+  style.
+    h1 {
+    text-align: center;
+    margin-top: 30px;
+    }
+    .polls-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .poll-item {
+    border: 3px solid #4A55A2;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #A0BFE0;
+    }
+    .poll-item:hover {
+    border: 5px solid #4A55A2;
+    }
+    .poll-question {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    }
+    .poll-options {
+    font-size: 16px;
+    }
+    .poll-created-by {
+    font-size: 14px;
+    color: #4A55A2;
+    }
+    .badge {
+    margin-left: auto;
+    height: 25px;
+    background-color: #4A55A2;
+    }
+    .table-container {
+    //- max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  .div.d-grid.d-md-flex
+    .div(style='height: 100%; width: 50%; margin-right: 10px;')
+      h2 My Polls
+      .polls-container
+        .dev(style='display: flex;justify-content: end; margin-bottom: 10px;')
+          a.btn.btn-outline-primary(href='/poll/new')
+            | Create Poll
+        if polls.length > 0
+        each poll in polls.sort(poll => poll.active ? -1 : 1)
+          .poll-item(style= poll.active?'margin-bottom: 10px;':'background-color: #a1a2wa3;border: 3px solid #000;')
+            .div.d-grid.d-md-flex
+              p.poll-question= poll.question
+              if poll.active
+                .badge(style='background-color: #24af4d; ') On going
+              else
+                .badge(style='background-color: #4b4c4d; ') Ended
+            p.poll-options Options: <b>#{poll.options.map((option) => option.optionText).join(', ')}</b>
+            .div.gap-4.d-grid.d-md-flex
+              p.poll-created-by Created by: 
+                b #{poll.createdBy.profile.name}
+              p.poll-option Total Votes: 
+                b #{poll.options.reduce((sum, option) => sum + option.votes, 0)}
+            a.btn.btn-outline-primary(href='/poll/id/' + poll._id)= poll.active ? 'View Poll' : 'View Results'
+        else  
+          p You have not created any polls yet.
+    .div
+      h2 My Votes
+      if votes.length > 0
+        .table-container(style='display: flex;justify-content: center; ')
+          table.table.table-primary.table-striped(style='margin-left: 10px; margin-top: 20px; width: 100%;')
+            thead
+              tr
+                th Poll Question
+                th Choosed Option
+                th Voted At
+            tbody
+              each vote in votes
+                tr
+                  td
+                    a(href='/poll/id/' + vote.poll._id)= vote.poll.question
+                  td= vote.selectedOption
+                  td= vote.voted_at.toLocaleDateString(undefined, {day: 'numeric',month: 'short',year: 'numeric',})

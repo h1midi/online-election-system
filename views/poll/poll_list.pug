@@ -13,7 +13,6 @@ block content
     margin: 0 auto;
     padding: 20px;
     margin-bottom: 30px;
-    //- background-color: #22A699;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .poll-item {
@@ -38,6 +37,11 @@ block content
     font-size: 14px;
     color: #4A55A2;
     }
+    .badge {
+    margin-left: auto;
+    height: 25px;
+    background-color: #4A55A2;
+    }
   .polls-container
     .row
       .col
@@ -47,15 +51,22 @@ block content
           a.btn.btn-outline-primary(href='/poll/new')
             | Create Poll
     each poll in polls.sort(poll => poll.active ? -1 : 1)
-      .poll-item
-        p.poll-question= poll.question
+      .poll-item(style= poll.active?'margin-bottom: 10px;':'background-color: #a1a2wa3;border: 3px solid #000;')
+        .div.d-grid.d-md-flex
+          p.poll-question= poll.question
+          if poll.hasVoted
+            .badge You voted
+          else if !poll.active
+            .badge(style='background-color: #4b4c4d')= poll.createdBy._id == user._id ? 'Closed' : 'Ended'
+          else if String(poll.createdBy._id) == String(user._id)
+            .badge(style='background-color: #cb6834; ') Your Poll
+          else
+            .badge(style='background-color: #24af4d; ') On going
         p.poll-options Options: <b>#{poll.options.map((option) => option.optionText).join(', ')}</b>
-        p.poll-created-by Created by: 
-          b #{poll.createdBy.profile.name}
         .div.gap-4.d-grid.d-md-flex
+          p.poll-created-by Created by: 
+            b #{poll.createdBy.profile.name}
           p.poll-option Total Votes: 
             b #{poll.options.reduce((sum, option) => sum + option.votes, 0)}
-          p.poll-option Status: 
-            b #{poll.active ? 'Active' : 'Closed'}
-        a.btn.btn-outline-primary(href='/poll/id/' + poll._id) View Poll
+        a.btn.btn-outline-primary(href='/poll/id/' + poll._id)= poll.active ? 'View Poll' : 'View Results'
 
