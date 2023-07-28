@@ -1,10 +1,10 @@
 {
-  "name": "bug-tracker",
+  "name": "online-election-system",
   "version": "1.0.0",
   "description": "",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hammiddi/bug-tracker.git"
+    "url": "https://github.com/h1midi/online-election-system.git"
   },
   "license": "MIT",
   "scripts": {
